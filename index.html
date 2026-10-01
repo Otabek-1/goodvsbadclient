@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Good News vs Bad News</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14103a;--ink2:#241a5e;--good:#2fe38a;--good2:#ffe14a;--bad:#ff3d81;--bad2:#8b3dff;--paper:#fff8e8;
+--disp:'Bungee','Impact',sans-serif;--body:'Fredoka','Trebuchet MS',sans-serif}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:var(--body);color:#fff;background:radial-gradient(120% 90% at 50% 0%,var(--ink2),var(--ink));overflow-x:hidden;
+padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+:focus-visible{outline:4px solid #fff;outline-offset:4px}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:drift 18s ease-in-out infinite alternate}
+.b1{width:48vmax;height:48vmax;background:var(--good);left:-15vmax;top:-10vmax}
+.b2{width:44vmax;height:44vmax;background:var(--bad);right:-12vmax;bottom:-12vmax;animation-delay:-6s}
+.b3{width:26vmax;height:26vmax;background:var(--bad2);left:40%;top:30%;opacity:.35;animation-delay:-11s}
+@keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.2) rotate(40deg)}}
+.dot{position:absolute;width:10px;height:10px;border-radius:50%;background:#fff;opacity:.25;animation:rise linear infinite}
+@keyframes rise{from{transform:translateY(105vh)}to{transform:translateY(-10vh)}}
+body.dim .b1,body.dim .b2{opacity:.18}
+.screen{position:relative;z-index:1;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:22px}
+.screen.on{display:flex;animation:in .6s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes in{from{opacity:0;transform:scale(.92) translateY(24px)}}
+h1,h2,.disp{font-family:var(--disp);font-weight:400;line-height:.95}
+.title{display:flex;flex-direction:column;align-items:center;gap:0}
+.w{font-family:var(--disp);display:block;text-shadow:0 6px 0 rgba(0,0,0,.35),0 14px 30px rgba(0,0,0,.35)}
+.w.g{font-size:clamp(3rem,13vw,11rem);color:var(--good2);transform:rotate(-5deg) translateX(-6vw);-webkit-text-stroke:3px #0a7a45;paint-order:stroke fill}
+.w.v{font-size:clamp(1.4rem,4vw,3rem);color:#fff;transform:rotate(3deg);margin:-.2em 0;background:var(--ink);padding:.1em .6em;border-radius:99px;border:3px solid #fff}
+.w.b{font-size:clamp(3rem,13vw,11rem);color:var(--bad);transform:rotate(4deg) translateX(7vw);-webkit-text-stroke:3px #4a0f8f;paint-order:stroke fill}
+.tag{font-size:clamp(1.1rem,2.4vw,1.8rem);font-weight:600;opacity:.9}
+.btn{font-family:var(--disp);font-size:clamp(1.2rem,3vw,2.2rem);padding:.6em 1.4em;border-radius:22px;color:var(--ink);
+background:linear-gradient(180deg,#ffe14a,#ffb300);box-shadow:0 8px 0 #b36b00,0 18px 30px rgba(0,0,0,.4);transition:transform .15s,box-shadow .15s;animation:pulse 2.4s ease-in-out infinite}
+.btn:hover:not(:disabled){transform:translateY(-4px) scale(1.05);box-shadow:0 12px 0 #b36b00,0 26px 40px rgba(255,200,0,.45)}
+.btn:active:not(:disabled){transform:translateY(6px);box-shadow:0 2px 0 #b36b00,0 6px 10px rgba(0,0,0,.4)}
+.btn:disabled{opacity:.5;cursor:not-allowed;animation:none}
+.btn.alt{background:linear-gradient(180deg,#fff,#cfc6ff);box-shadow:0 8px 0 #6a5bd0,0 18px 30px rgba(0,0,0,.4)}
+.btn.vote{background:linear-gradient(180deg,#ff5fa0,#e0145f);color:#fff;box-shadow:0 8px 0 #8c0a3b,0 18px 30px rgba(0,0,0,.4)}
+@keyframes pulse{50%{filter:brightness(1.12)}}
+/* card */
+.scene{perspective:1400px;width:min(92vw,720px);height:min(60vh,440px);filter:drop-shadow(0 30px 30px rgba(0,0,0,.45))}
+.flipper{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.45,.05,.2,1.15);cursor:pointer;animation:float 4s ease-in-out infinite;display:block}
+.flipper.flip{transform:rotateY(180deg) scale(1.03);animation:none}
+@keyframes float{50%{transform:translateY(-12px) rotateX(4deg) rotateY(-3deg)}}
+.face{position:absolute;inset:0;border-radius:32px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:6%;overflow:hidden}
+.front{background:repeating-linear-gradient(45deg,#ffffff14 0 14px,transparent 14px 28px),linear-gradient(135deg,var(--bad2),var(--bad) 55%,#ff9d3d);border:8px solid #fff;box-shadow:inset 0 0 0 6px var(--ink),inset 0 0 60px #ffffff55}
+.front .q{font-family:var(--disp);font-size:clamp(5rem,16vw,9rem);color:#fff;text-shadow:0 8px 0 var(--ink);animation:wob 2s ease-in-out infinite}
+@keyframes wob{50%{transform:rotate(8deg) scale(1.1)}}
+.front .disp{font-size:clamp(1.6rem,5vw,3rem);text-shadow:0 5px 0 var(--ink)}
+.front small{font-size:1.2rem;font-weight:700;background:var(--ink);padding:.3em 1em;border-radius:99px}
+.back{transform:rotateY(180deg);background:var(--paper);color:var(--ink);border:8px solid var(--ink);box-shadow:inset 0 0 0 6px var(--good2),inset 0 0 0 10px var(--bad)}
+.back .tagl{font-family:var(--disp);background:var(--bad);color:#fff;padding:.3em 1em;border-radius:99px;font-size:clamp(.9rem,2vw,1.3rem)}
+.back p{font-weight:700;font-size:clamp(1.3rem,3.6vw,2.4rem);line-height:1.25}
+.star{position:absolute;font-size:2rem}
+.s1{top:12px;left:18px}.s2{bottom:12px;right:18px}
+.slogan{font-family:var(--disp);font-size:clamp(1.1rem,3.4vw,2.2rem);color:var(--good2);text-shadow:0 4px 0 rgba(0,0,0,.4)}
+.row{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.hide{display:none!important}
+/* voting intro */
+#intro{position:fixed;inset:0;z-index:20;background:rgba(10,6,30,.92);display:none;align-items:center;justify-content:center;overflow:hidden}
+#intro.on{display:flex}
+.flag{position:absolute;top:0;bottom:0;width:50%;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:clamp(2.5rem,12vw,9rem);transition:transform .8s cubic-bezier(.2,.9,.3,1.1)}
+.flag.g{left:0;background:linear-gradient(135deg,#0a7a45,var(--good));clip-path:polygon(0 0,100% 0,85% 100%,0 100%);transform:translateX(-110%)}
+.flag.b{right:0;background:linear-gradient(225deg,#4a0f8f,var(--bad));clip-path:polygon(15% 0,100% 0,100% 100%,0 100%);transform:translateX(110%)}
+#intro.on .flag{transform:none}
+.flag span{transform:rotate(-8deg);text-shadow:0 8px 0 rgba(0,0,0,.35)}
+.big{position:relative;z-index:2;font-family:var(--disp);font-size:clamp(2.6rem,10vw,8rem);text-shadow:0 8px 0 var(--ink),0 0 40px #000;transform:scale(0) rotate(-10deg);opacity:0}
+#intro.on .big{animation:slam .6s .7s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes slam{to{transform:scale(1) rotate(-3deg);opacity:1}}
+.ballot{font-size:clamp(4rem,12vw,8rem);animation:wob 1.5s infinite}
+.dots span{animation:blink 1.2s infinite;display:inline-block}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{50%{opacity:.2;transform:translateY(-8px)}}
+/* results */
+#curtain{position:fixed;inset:0;z-index:30;background:#000;opacity:0;pointer-events:none;transition:opacity .6s}
+#curtain.on{opacity:1;pointer-events:auto}
+#curtain.flash{background:#fff;transition:none}
+.stage{display:flex;gap:clamp(12px,4vw,48px);align-items:flex-end;justify-content:center;width:min(94vw,900px);height:min(42vh,340px)}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:8px}
+.num{font-family:var(--disp);font-size:clamp(3rem,10vw,7rem);text-shadow:0 6px 0 rgba(0,0,0,.4)}
+.bar{width:100%;height:0;border-radius:24px 24px 0 0;border:5px solid #fff;border-bottom:0;transition:height 2s cubic-bezier(.2,.8,.2,1);min-height:0}
+.bar.g{background:linear-gradient(180deg,var(--good2),var(--good))}
+.bar.b{background:linear-gradient(180deg,var(--bad),var(--bad2))}
+.lab{font-family:var(--disp);font-size:clamp(1rem,3vw,2rem);padding:.3em .8em;border-radius:14px;background:var(--ink);border:3px solid #fff;white-space:nowrap}
+.col.win .lab{background:var(--good2);color:var(--ink);transform:scale(1.15)}
+.verdict{font-family:var(--disp);font-size:clamp(2.2rem,8vw,6rem);opacity:0;transform:scale(.3)}
+.verdict.on{animation:slam .7s cubic-bezier(.2,1.6,.4,1) forwards}
+.spoken{font-family:var(--disp);font-size:clamp(1.2rem,4vw,2.6rem);color:var(--good2)}
+.conf{position:fixed;top:-20px;width:12px;height:18px;z-index:25;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+/* errors + status */
+.err{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:40;background:#fff;color:var(--ink);border-radius:20px;padding:14px 18px;font-weight:700;display:none;gap:12px;align-items:center;box-shadow:0 10px 40px #0008;max-width:92vw}
+.err.on{display:flex}
+.err button{background:var(--bad);color:#fff;border-radius:12px;padding:.4em 1em;font-weight:700}
+.status{position:fixed;top:10px;right:12px;z-index:15;font-size:.85rem;font-weight:600;background:#0006;padding:.3em .8em;border-radius:99px}
+.status i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#aaa;margin-right:6px}
+.status.ok i{background:var(--good)}.status.bad i{background:var(--bad)}
+.mute{position:fixed;top:10px;left:12px;z-index:15;background:#0006;border-radius:99px;padding:.3em .8em;font-size:1rem}
+/* vote page */
+.choices{display:flex;flex-direction:column;gap:18px;width:min(92vw,460px)}
+.choice{font-family:var(--disp);font-size:clamp(2rem,9vw,3rem);padding:1em .5em;border-radius:28px;transition:transform .15s,filter .3s;width:100%}
+.choice.g{background:linear-gradient(135deg,var(--good2),var(--good));color:#06432a;box-shadow:0 9px 0 #0a7a45,0 20px 30px #0006;transform:rotate(-2deg)}
+.choice.b{background:linear-gradient(135deg,var(--bad),var(--bad2));box-shadow:0 9px 0 #4a0f8f,0 20px 30px #0006;transform:rotate(2deg)}
+.choice:active:not(:disabled){transform:scale(.94) translateY(6px)}
+.choice:disabled{filter:grayscale(.8) brightness(.7);cursor:not-allowed}
+.choice.picked{filter:none;animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.12) rotate(0)}}
+.done{font-family:var(--disp);font-size:clamp(1.8rem,8vw,3rem);color:var(--good2);min-height:1.2em}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.flipper{animation:none}.blob,.dot{display:none}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div id="dots"></div></div>
+<div id="status" class="status" role="status" aria-live="polite"><i></i><span>Connecting…</span></div>
+<button id="mute" class="mute hide" aria-label="Toggle sound" aria-pressed="false">🔊 Sound on</button>
+
+<!-- LANDING -->
+<main id="s-landing" class="screen">
+  <h1 class="title" aria-label="Good News versus Bad News"><span class="w g">GOOD NEWS</span><span class="w v">vs</span><span class="w b">BAD NEWS</span></h1>
+  <p class="tag">One story. Two perspectives.</p>
+  <button id="startGame" class="btn">START GAME</button>
+</main>
+
+<!-- CARD -->
+<main id="s-card" class="screen">
+  <div class="scene">
+    <div id="card" class="flipper" role="button" tabindex="0" aria-label="Mystery news card. Click to reveal.">
+      <div class="face front"><span class="star s1">⭐</span><span class="star s2">⭐</span><span class="q">?</span><span class="disp">MYSTERY NEWS</span><small>Click to Reveal</small></div>
+      <div class="face back"><span class="tagl">BREAKING NEWS</span><p id="newsText" aria-live="polite"></p></div>
+    </div>
+  </div>
+  <div id="afterReveal" class="hide">
+    <p class="slogan">ONE STORY. TWO PERSPECTIVES.</p><br>
+    <div class="row"><button id="again" class="btn alt">AGAIN</button><button id="startVoting" class="btn vote">START VOTING</button></div>
+  </div>
+</main>
+
+<!-- VOTING (presenter) -->
+<main id="s-voting" class="screen">
+  <div class="ballot" aria-hidden="true">🗳️</div>
+  <h2 class="disp" style="font-size:clamp(2rem,7vw,5rem)">THE AUDIENCE IS VOTING</h2>
+  <p class="tag dots" aria-live="polite">Waiting for the votes<span>.</span><span>.</span><span>.</span></p>
+  <p class="tag">Students: open <b id="voteLink"></b> on your phone</p>
+  <button id="showResults" class="btn">SHOW RESULTS</button>
+</main>
+
+<!-- RESULTS -->
+<main id="s-results" class="screen">
+  <p id="spoken" class="spoken" style="opacity:0">THE AUDIENCE HAS SPOKEN</p>
+  <div class="stage">
+    <div class="col" id="colG"><div class="num" id="numG">0</div><div class="bar g" id="barG"></div><div class="lab">GOOD NEWS</div></div>
+    <div class="col" id="colB"><div class="num" id="numB">0</div><div class="bar b" id="barB"></div><div class="lab">BAD NEWS</div></div>
+  </div>
+  <h2 id="verdict" class="verdict" aria-live="assertive"></h2>
+  <button id="nextRound" class="btn hide">NEXT ROUND</button>
+</main>
+
+<!-- VOTE INTRO OVERLAY -->
+<div id="intro" aria-hidden="true">
+  <div class="flag g"><span>GOOD</span></div><div class="flag b"><span>BAD</span></div>
+  <div class="big">VOTING<br>HAS STARTED!</div>
+</div>
+<div id="curtain"></div>
+
+<!-- AUDIENCE /vote -->
+<main id="s-vote" class="screen">
+  <h1 class="title" aria-label="Good News versus Bad News" style="transform:scale(.45);margin:-70px 0"><span class="w g">GOOD NEWS</span><span class="w v">vs</span><span class="w b">BAD NEWS</span></h1>
+  <p class="tag" style="font-size:1.5rem">Choose your perspective</p>
+  <div class="choices">
+    <button class="choice g" data-choice="good">GOOD NEWS</button>
+    <button class="choice b" data-choice="bad">BAD NEWS</button>
+  </div>
+  <p id="done" class="done" role="status" aria-live="polite"></p>
+</main>
+
+<div id="err" class="err" role="alert"><span id="errMsg">Oops! We couldn't connect to the game server.</span><button id="retry">Retry</button></div>
+
+<script>
+// ===== Configuration =====
+// >>> CHANGE THIS after deploying the backend (no trailing slash) <<<
+const API_URL = "https://otabek.alwaysdata.net";
+const TIMEOUT_MS = 8000;
+
+// ===== News Data =====
+const newsList = [
+  "Oil prices dropped by 20% this month.",
+  "A new AI tool can now write most of the code for simple apps.",
+  "Your university is raising tuition by 10% but promises new labs.",
+  "The national currency lost 8% of its value against the dollar.",
+  "The central bank cut interest rates to make loans cheaper.",
+  "The cafeteria is closing for a month, and a new food court opens after.",
+  "Unemployment fell to its lowest level in ten years.",
+  "Global temperatures hit a record high this summer.",
+  "Exams are moving online, and the internet in the dorms will be upgraded.",
+  "A new tax on imported goods starts next week.",
+  "Bus tickets are now free for all students, but routes are being reduced.",
+  "Inflation slowed to 2%, yet prices are still high compared to last year."
+];
+
+// ===== State =====
+const state = { news: null, lastIdx: -1, busy: false, revealed: false, voted: false, muted: false };
+
+// ===== DOM Elements =====
+const $ = id => document.getElementById(id);
+const screens = ["landing", "card", "voting", "results", "vote"];
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 60) : ms));
+
+function show(name) {
+  screens.forEach(s => $("s-" + s).classList.toggle("on", s === name));
+  document.body.classList.toggle("dim", name === "voting" || name === "results");
+  $("mute").classList.toggle("hide", name === "vote");
+  window.scrollTo(0, 0);
+}
+
+// ===== Voting API =====
+let retryFn = null;
+function showError(msg, retry) {
+  $("errMsg").textContent = msg || "Oops! We couldn't connect to the game server.";
+  retryFn = retry || null;
+  $("retry").classList.toggle("hide", !retry);
+  $("err").classList.add("on");
+}
+function clearError() { $("err").classList.remove("on"); }
+function setStatus(ok) {
+  const s = $("status");
+  s.className = "status " + (ok ? "ok" : "bad");
+  s.lastElementChild.textContent = ok ? "Connected" : "Offline";
+}
+async function api(path, options) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(API_URL + path, { ...options, signal: ctrl.signal, headers: { "Content-Type": "application/json" } });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    let data = null;
+    try { data = await res.json(); } catch (e) { data = null; }
+    setStatus(true);
+    return data;
+  } catch (e) {
+    setStatus(false);
+    throw e;
+  } finally { clearTimeout(t); }
+}
+function parseResults(d) {
+  if (!d || !Number.isFinite(+d.good) || !Number.isFinite(+d.bad)) throw new Error("Invalid response");
+  return { good: +d.good, bad: +d.bad };
+}
+const getResults = async () => parseResults(await api("/results"));
+const postVote = choice => api("/vote", { method: "POST", body: JSON.stringify({ choice }) });
+const postReset = () => api("/reset", { method: "POST" });
+
+// Light polling while voting is active (numbers are NOT displayed, only keeps status fresh)
+let pollTimer = null;
+function startPolling() { stopPolling(); pollTimer = setInterval(() => getResults().catch(() => {}), 5000); }
+function stopPolling() { clearInterval(pollTimer); pollTimer = null; }
+
+// ===== Animations / Sound =====
+let actx = null;
+function audio() {
+  if (state.muted) return null;
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); return actx; }
+  catch (e) { return null; }
+}
+function drum(when = 0, freq = 140, vol = 1) {
+  const c = audio(); if (!c) return;
+  const t = c.currentTime + when;
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = "sine"; o.frequency.setValueAtTime(freq * 1.6, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.25);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t + 0.45);
+  const n = c.createBufferSource(), buf = c.createBuffer(1, c.sampleRate * 0.2, c.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+  n.buffer = buf; const ng = c.createGain(); ng.gain.setValueAtTime(vol * 0.5, t); ng.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+  n.connect(ng).connect(c.destination); n.start(t);
+}
+function drumRoll() { [0, .18, .36].forEach((w, i) => drum(w, 130 + i * 20, .8)); drum(.6, 90, 1.2); }
+function tick() { drum(0, 220, .4); }
+function confetti() {
+  if (reduce) return;
+  const cols = ["#ffe14a", "#2fe38a", "#ff3d81", "#8b3dff", "#fff"];
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement("i"); c.className = "conf";
+    c.style.left = Math.random() * 100 + "vw"; c.style.background = cols[i % 5];
+    c.style.animationDuration = 2 + Math.random() * 2 + "s"; c.style.animationDelay = Math.random() * .6 + "s";
+    document.body.appendChild(c); setTimeout(() => c.remove(), 5000);
+  }
+}
+function countUp(el, to, ms) {
+  return new Promise(res => {
+    if (reduce || to === 0) { el.textContent = to; return res(); }
+    const t0 = performance.now();
+    (function f(now) {
+      const p = Math.min(1, (now - t0) / ms);
+      el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+      p < 1 ? requestAnimationFrame(f) : res();
+    })(t0);
+  });
+}
+
+// ===== Game Logic =====
+function pickNews() {
+  let i; do { i = Math.floor(Math.random() * newsList.length); } while (newsList.length > 1 && i === state.lastIdx);
+  state.lastIdx = i; return newsList[i];
+}
+async function revealCard() {
+  if (state.busy || state.revealed) return;
+  state.busy = true;
+  state.news = pickNews(); $("newsText").textContent = state.news;
+  drum(0, 180, .5);
+  $("card").classList.add("flip");
+  await sleep(1000);
+  state.revealed = true; state.busy = false;
+  $("card").setAttribute("aria-label", "News revealed: " + state.news);
+  $("afterReveal").classList.remove("hide");
+}
+async function again() {
+  if (state.busy || !state.revealed) return;
+  state.busy = true; state.revealed = false;
+  $("again").disabled = $("startVoting").disabled = true;
+  $("card").classList.remove("flip");
+  await sleep(1000);
+  state.news = pickNews(); $("newsText").textContent = state.news;
+  drum(0, 180, .5);
+  $("card").classList.add("flip");
+  await sleep(1000);
+  state.revealed = true; state.busy = false;
+  $("again").disabled = $("startVoting").disabled = false;
+}
+async function startVoting() {
+  if (state.busy) return; state.busy = true;
+  try { await postReset(); } catch (e) { /* a failed pre-clean must not block; vote page will report errors */ }
+  const intro = $("intro"); intro.classList.add("on"); intro.setAttribute("aria-hidden", "false");
+  drumRoll();
+  await sleep(3200);
+  intro.classList.remove("on"); intro.setAttribute("aria-hidden", "true");
+  show("voting"); startPolling(); state.busy = false;
+}
+async function showResults() {
+  if (state.busy) return; state.busy = true;
+  $("showResults").disabled = true;
+  let r;
+  try { r = await getResults(); clearError(); }
+  catch (e) { state.busy = false; $("showResults").disabled = false; return showError("Oops! We couldn't load the votes.", showResults); }
+  stopPolling();
+  const cur = $("curtain"); cur.className = "on";
+  tick(); await sleep(700); show("results");
+  $("numG").textContent = $("numB").textContent = "0"; $("barG").style.height = $("barB").style.height = "0";
+  $("verdict").className = "verdict"; $("verdict").textContent = ""; $("nextRound").classList.add("hide");
+  $("spoken").style.opacity = 0; $("colG").classList.remove("win"); $("colB").classList.remove("win");
+  await sleep(1400); drum(0, 100, 1.3);
+  cur.className = "on flash"; await sleep(60); cur.className = "";
+  $("spoken").style.opacity = 1; confetti();
+  const max = Math.max(r.good, r.bad, 1);
+  await sleep(500);
+  $("barG").style.height = (r.good / max * 100 * .7) + "%"; $("barB").style.height = (r.bad / max * 100 * .7) + "%";
+  await Promise.all([countUp($("numG"), r.good, 2000), countUp($("numB"), r.bad, 2000)]);
+  await sleep(700);
+  let text = "IT'S A TIE!";
+  if (r.good > r.bad) { text = "GOOD NEWS WINS!"; $("colG").classList.add("win"); }
+  else if (r.bad > r.good) { text = "BAD NEWS WINS!"; $("colB").classList.add("win"); }
+  $("verdict").textContent = text; $("verdict").classList.add("on");
+  $("verdict").style.color = r.good > r.bad ? "var(--good)" : r.bad > r.good ? "var(--bad)" : "var(--good2)";
+  drumRoll(); confetti();
+  await sleep(900);
+  $("nextRound").classList.remove("hide"); state.busy = false;
+}
+async function nextRound() {
+  if (state.busy) return; state.busy = true; $("nextRound").disabled = true;
+  try { await postReset(); clearError(); }
+  catch (e) { state.busy = false; $("nextRound").disabled = false; return showError("Oops! The votes couldn't be reset.", nextRound); }
+  $("nextRound").disabled = false;
+  resetCard(); show("card"); state.busy = false;
+}
+function resetCard() {
+  state.revealed = false; state.news = null;
+  $("card").classList.remove("flip"); $("afterReveal").classList.add("hide");
+  $("again").disabled = $("startVoting").disabled = false; $("showResults").disabled = false;
+  $("card").setAttribute("aria-label", "Mystery news card. Click to reveal.");
+}
+
+// ===== Audience page =====
+async function castVote(choice, btn) {
+  if (state.voted) return;
+  state.voted = true;
+  document.querySelectorAll(".choice").forEach(b => b.disabled = true);
+  btn.classList.add("picked");
+  try {
+    await postVote(choice); clearError();
+    $("done").textContent = "VOTE SUBMITTED ✓";
+    if (navigator.vibrate) navigator.vibrate(60);
+  } catch (e) {
+    state.voted = false;
+    document.querySelectorAll(".choice").forEach(b => { b.disabled = false; b.classList.remove("picked"); });
+    $("done").textContent = "";
+    showError("Oops! We couldn't connect to the game server. Your vote wasn't sent.", () => { clearError(); });
+  }
+}
+
+// ===== Routing =====
+const isVotePage = () => /\/vote\/?$/.test(location.pathname) || location.hash === "#/vote" || new URLSearchParams(location.search).has("vote");
+
+// ===== Initialization =====
+function init() {
+  for (let i = 0; i < 18; i++) { // subtle particles
+    const d = document.createElement("span"); d.className = "dot";
+    d.style.left = Math.random() * 100 + "vw"; d.style.animationDuration = 14 + Math.random() * 16 + "s";
+    d.style.animationDelay = -Math.random() * 20 + "s"; d.style.transform = "scale(" + (.5 + Math.random()) + ")";
+    $("dots").appendChild(d);
+  }
+  $("retry").onclick = () => { clearError(); if (retryFn) retryFn(); };
+  if (API_URL === "YOUR_BACKEND_URL") showError("Set API_URL in index.html to your backend address.");
+  if (isVotePage()) {
+    show("vote");
+    document.querySelectorAll(".choice").forEach(b => b.onclick = () => castVote(b.dataset.choice, b));
+    getResults().catch(() => {});
+    setInterval(() => getResults().catch(() => {}), 15000);
+    return;
+  }
+  show("landing");
+  $("voteLink").textContent = location.host + location.pathname.replace(/[^/]*$/, "") + "vote";
+  $("startGame").onclick = () => { audio(); drum(0, 200, .5); resetCard(); show("card"); };
+  $("card").onclick = revealCard;
+  $("card").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); revealCard(); } };
+  $("again").onclick = again;
+  $("startVoting").onclick = startVoting;
+  $("showResults").onclick = showResults;
+  $("nextRound").onclick = nextRound;
+  $("mute").onclick = () => {
+    state.muted = !state.muted;
+    $("mute").textContent = state.muted ? "🔇 Sound off" : "🔊 Sound on";
+    $("mute").setAttribute("aria-pressed", state.muted);
+  };
+  $("mute").classList.add("hide");
+  getResults().catch(() => {});
+}
+init();
+</script>
+</body>
+</html>
